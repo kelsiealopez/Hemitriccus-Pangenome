@@ -7,7 +7,7 @@ Code for hemitriccus pangenome project
 
 ```bash
 ############################################################################
-############################# Gene Density Pipeline ########################
+############################# Gene Density  ################################
 ############################################################################
 
 # Path to the GFF3 annotation file
@@ -17,7 +17,7 @@ gff="/n/netscratch/edwards_lab/Lab/kelsielopez/HemMar_annotation/toga/hemMar_wit
 awk '$3=="gene" {OFS="\t"; print $1, $4-1, $5}' ${gff} > genes.bed
 
 # ----------------------------------------------------------------------------
-# Section: Getting Genome/Chromosome Sizes from FASTA
+# Getting Genome/Chromosome Sizes from FASTA
 # ----------------------------------------------------------------------------
 
 # (Optional) Index your FASTA file to prepare for downstream steps
@@ -27,14 +27,7 @@ samtools faidx your.fasta
 cut -f1,2 your.fasta.fai > genome.sizes
 
 # ----------------------------------------------------------------------------
-# Section: Useful One-Offs
-# ----------------------------------------------------------------------------
-
-# Count the number of unique entries (likely gene IDs) in first column of a tab-delimited file
-awk '{print $1}' HemMar_10_haps_June_2025_new_faa_fix_PAV.Rtab | sort -u | wc -l
-
-# ----------------------------------------------------------------------------
-# Section: Preparing Final Inputs for Windowing & Density Calculation
+# Preparing Final Inputs for Windowing & Density Calculation
 # ----------------------------------------------------------------------------
 
 # Define path to reference FASTA and its .fai index
@@ -51,7 +44,7 @@ cut -f1,2 ${REF_fai} > genome.sizes
 sed -i 's/HemMar#1#//g' genome.sizes
 
 # ----------------------------------------------------------------------------
-# Section: Windowing and Gene Density Calculation
+# Windowing and Gene Density Calculation
 # ----------------------------------------------------------------------------
 
 # Path to your bedtools binary
