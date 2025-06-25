@@ -171,3 +171,59 @@ result = (
 # Save output
 result[['chrom','start','end','recombRate']].to_csv('recomb_rate_200kb_windows.bed', sep='\t', header=False, index=False)
 ```
+
+
+**Take average GC conetent in windows:**
+
+
+```bash
+############################################################################
+############################################################################
+############################# GC CONTENT ###################################
+############################################################################
+############################################################################
+############################################################################
+
+REF="/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/hemMar_complete_sorted_prefixed_pggb_subset_JBAT.FINAL.full.soft.mask.fasta"
+
+#if making a bed file of GC content...
+
+cd /n/netscratch/edwards_lab/Lab/kelsielopez/feature_importance
+
+
+nano extract_GC_content.py
+
+# below is the python code 
+
+from Bio import SeqIO
+import pandas as pd
+
+fasta_path = "/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/hemMar_complete_sorted_prefixed_pggb_subset_JBAT.FINAL.full.soft.mask.fasta"
+bed_out = "gc_content.10kb.bed"
+
+window_size = 10000  # <-- Change this as needed!
+
+out = []
+for record in SeqIO.parse(fasta_path, "fasta"):
+    seq = str(record.seq).upper()
+    seqlen = len(seq)
+    for start in range(0, seqlen, window_size):
+        end = min(start + window_size, seqlen)
+        window_seq = seq[start:end]
+        gc = window_seq.count('G') + window_seq.count('C')
+        atgc = gc + window_seq.count('A') + window_seq.count('T')
+        gc_content = gc / atgc if atgc > 0 else 0
+        out.append([record.id, start, end, round(gc_content, 4)])
+
+# Save to BED
+df = pd.DataFrame(out, columns=['chrom','start','end','gc_content'])
+df.to_csv(bed_out, sep='\t', index=False, header=False)
+
+
+# copy so i don't overwrite the oroginal file 
+cp gc_content.10kb.bed gc_content.10kb.no.hemMar.bed
+
+# also remove hemMar prefix
+sed -i 's/HemMar#1#//g' gc_content.10kb.no.hemMar.bed
+
+```
