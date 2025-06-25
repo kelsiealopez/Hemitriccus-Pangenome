@@ -382,3 +382,140 @@ ${bedtools_path} intersect -c -a genome.200kb.windows.bed -b repeats_ALL.bed \
 
 
 ```
+
+**Variant density in windows:**
+
+```bash
+############################################################################
+############################# Variant Density ###############################
+############################################################################
+
+# List all unique variant types (column 8) present in your input tab file
+awk '{print $8}' pggb_variation_overlaps_final.tab | sort -u
+
+# ------------------------
+# Define path to the input file with variant annotations
+variation_file="/n/netscratch/edwards_lab/Lab/kelsielopez/pggb_redo/merging/pggb_variation_overlaps_final.tab"
+
+# ------------------------
+# Extract SVs (structural variants) to a BED, selecting certain variant types from column 8
+awk 'BEGIN{FS=OFS="\t"}
+  NR>1 && ($8=="SV_Complex" || $8=="SVDEL" || $8=="SVDEL_Complex" || $8=="SVINS" || $8=="SVINS_Complex"){print $1,$2,$3}' ${variation_file} > SVs.bed
+
+# Remove 'HemMar#1#' prefix from chromosome names (if present)
+sed -i 's/HemMar#1#//g' SVs.bed
+
+# ------------------------
+# Extract INDELs (insertions & deletions) to a BED
+awk 'BEGIN{FS=OFS="\t"}
+  NR>1 && ($8=="DEL" || $8=="DEL_Complex" || $8=="INDEL_Complex" || $8=="INS" || $8=="INS_Complex"){print $1,$2,$3}' ${variation_file} > INDELs.bed
+
+# Remove chromosome prefix if needed
+sed -i 's/HemMar#1#//g' INDELs.bed
+
+# ------------------------
+# Extract SNPs (single nucleotide polymorphisms) to a BED
+awk 'BEGIN{FS=OFS="\t"}
+  NR>1 && ($8=="SNP" || $8=="SNP_Complex"){print $1,$2,$3}' ${variation_file} > SNPs.bed
+
+# Remove chromosome prefix if needed
+sed -i 's/HemMar#1#//g' SNPs.bed
+
+# ------------------------
+# Calculate the fraction of each window (10kb) covered by SVs. Last column is fraction covered.
+${bedtools_path} coverage -a genome.10kb.windows.bed -b SVs.bed | \
+  awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"SV_density",$7}' > SV_density_10kb.bed
+
+# Repeat for 200kb windows
+${bedtools_path} coverage -a genome.200kb.windows.bed -b SVs.bed | \
+  awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"SV_density",$7}' > SV_density_200kb.bed
+
+# ------------------------
+# Calculate the fraction of each window (10kb) covered by INDELs
+${bedtools_path} coverage -a genome.10kb.windows.bed -b INDELs.bed | \
+  awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"INDEL_density",$7}' > INDEL_density_10kb.bed
+
+# Repeat for 200kb windows
+${bedtools_path} coverage -a genome.200kb.windows.bed -b INDELs.bed | \
+  awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"INDEL_density",$7}' > INDEL_density_200kb.bed
+
+# ------------------------
+# Calculate the fraction of each window (10kb) covered by SNPs
+${bedtools_path} coverage -a genome.10kb.windows.bed -b SNPs.bed | \
+  awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"SNP_density",$7}' > SNP_density_10kb.bed
+
+# Repeat for 200kb windows
+${bedtools_path} coverage -a genome.200kb.windows.bed -b SNPs.bed | \
+  awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"SNP_density",$7}' > SNP_density_200kb.bed
+
+############################################################################
+
+############################################################################
+############################# Variant Counts ################################
+############################################################################
+
+# List all unique variant types (column 8) present in your input tab file
+awk '{print $8}' pggb_variation_overlaps_final.tab | sort -u
+
+# ------------------------
+# Define path to the input file with variant annotations
+variation_file="/n/netscratch/edwards_lab/Lab/kelsielopez/pggb_redo/merging/pggb_variation_overlaps_final.tab"
+
+# ------------------------
+# Extract SVs (structural variants) to a BED, selecting certain variant types from column 8
+awk 'BEGIN{FS=OFS="\t"}
+  NR>1 && ($8=="SV_Complex" || $8=="SVDEL" || $8=="SVDEL_Complex" || $8=="SVINS" || $8=="SVINS_Complex"){print $1,$2,$3}' ${variation_file} > SVs.bed
+
+# Remove 'HemMar#1#' prefix from chromosome names (if present)
+sed -i 's/HemMar#1#//g' SVs.bed
+
+# ------------------------
+# Extract INDELs (insertions & deletions) to a BED
+awk 'BEGIN{FS=OFS="\t"}
+  NR>1 && ($8=="DEL" || $8=="DEL_Complex" || $8=="INDEL_Complex" || $8=="INS" || $8=="INS_Complex"){print $1,$2,$3}' ${variation_file} > INDELs.bed
+
+# Remove chromosome prefix if needed
+sed -i 's/HemMar#1#//g' INDELs.bed
+
+# ------------------------
+# Extract SNPs (single nucleotide polymorphisms) to a BED
+awk 'BEGIN{FS=OFS="\t"}
+  NR>1 && ($8=="SNP" || $8=="SNP_Complex"){print $1,$2,$3}' ${variation_file} > SNPs.bed
+
+# Remove chromosome prefix if needed
+sed -i 's/HemMar#1#//g' SNPs.bed
+
+# ------------------------
+# For each window, count the number of SVs present (counts per 10kb window)
+${bedtools_path} intersect -c -a genome.10kb.windows.bed -b SVs.bed | \
+  awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"SV_count",$NF}' > SV_count_10kb.bed
+
+# Repeat for 200kb windows
+${bedtools_path} intersect -c -a genome.200kb.windows.bed -b SVs.bed | \
+  awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"SV_count",$NF}' > SV_count_200kb.bed
+
+# ------------------------
+# For each window, count the number of INDELs (counts per 10kb window)
+${bedtools_path} intersect -c -a genome.10kb.windows.bed -b INDELs.bed | \
+  awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"INDEL_count",$NF}' > INDEL_count_10kb.bed
+
+# Repeat for 200kb windows
+${bedtools_path} intersect -c -a genome.200kb.windows.bed -b INDELs.bed | \
+  awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"INDEL_count",$NF}' > INDEL_count_200kb.bed
+
+# ------------------------
+# For each window, count the number of SNPs (counts per 10kb window)
+${bedtools_path} intersect -c -a genome.10kb.windows.bed -b SNPs.bed | \
+  awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"SNP_count",$NF}' > SNP_count_10kb.bed
+
+# Repeat for 200kb windows
+${bedtools_path} intersect -c -a genome.200kb.windows.bed -b SNPs.bed | \
+  awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"SNP_count",$NF}' > SNP_count_200kb.bed
+
+############################################################################
+# Outputs:
+# - *_count_10kb.bed   : One line per 10kb window, number of variants (by type) in $5
+# - *_count_200kb.bed  : One line per 200kb window, number of variants (by type) in $5
+############################################################################
+
+```
