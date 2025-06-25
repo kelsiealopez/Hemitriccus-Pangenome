@@ -4,6 +4,8 @@ Code for hemitriccus pangenome project
 ## 1. Genomic feature - SV associations
 
 **Get gene density in different genomic windows**
+
+```bash
 ############################################################################
 ############################# Gene Density Pipeline ########################
 ############################################################################
@@ -60,3 +62,4 @@ ${bedtools_path} makewindows -g genome.sizes -w 10000 > windows.bed
 
 # For each 10kb window, count the number of genes that overlap; write output to gene_density_10kb.bed
 ${bedtools_path} intersect -a windows.bed -b genes.bed -c > gene_density_10kb.bed
+```
