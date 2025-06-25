@@ -3,7 +3,7 @@ Code for hemitriccus pangenome project
 
 ## Genomic feature - SV associations
 
-**1. Get gene density **
+**Get gene density **
 
 ```bash
 ############################################################################
