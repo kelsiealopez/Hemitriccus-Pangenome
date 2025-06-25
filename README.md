@@ -227,3 +227,130 @@ cp gc_content.10kb.bed gc_content.10kb.no.hemMar.bed
 sed -i 's/HemMar#1#//g' gc_content.10kb.no.hemMar.bed
 
 ```
+
+
+**Take proportions of repeat content in windows:**
+
+
+```bash
+
+############################################################################
+############################# Repeat Analysis ###############################
+############################################################################
+
+# ------------------------
+# 1. Define broad repeat class mapping (in Python, see below)
+# ------------------------
+
+# Mapping of various repeat subtypes (from annotation) into broad repeat classes
+# (e.g. LINE, SINE, DNA, LTR, etc.); will be used in a Python script below
+
+# ------------------------
+# 2. Explore Repeat BED File
+# ------------------------
+
+# Count the unique repeat classes in your reformatted repeat BED file
+awk '{print $4}' repeat_overlaps_reformatted_final.bed | sort -u | wc -l
+
+# ------------------------
+# 3. Create windows across the genome for analysis
+# ------------------------
+
+# Create 10kb non-overlapping windows over the reference genome
+${bedtools_path} makewindows -g genome.sizes -w 10000 > genome.10kb.windows.bed
+
+# ------------------------
+# 4. Extract broad repeat class for each feature (use last element if comma-separated)
+# ------------------------
+
+awk -F'\t' '{
+  n=split($4, arr, ",");
+  print $1"\t"$2"\t"$3"\t"arr[n]
+}' repeat_overlaps_reformatted_final.bed > repeats_majorclass.bed
+
+# List all unique repeat classes in the newly created BED
+awk '{print $4}' repeats_majorclass.bed | sort -u
+
+# ------------------------
+# 5. Map each repeat subtype to a broad class using Python
+# ------------------------
+
+# Create a mapping script for broad repeat categories
+# (save as "broad_repeat_category_mapping.py")
+cat << EOF > broad_repeat_category_mapping.py
+import pandas as pd
+
+# Mapping dictionary for detailed repeat classes to broad classes
+mapping = {
+    "LINE": "LINE", "LINE.inc": "LINE", "LINE?": "LINE",
+    "DNA": "DNA", "DNA.inc": "DNA", "DNA?": "DNA",
+    "LTR": "LTR", "LTR.inc": "LTR", "LTR?": "LTR",
+    "Low_complexity": "Low_complexity",
+    "Other": "Other", "RC": "Other", "RC?": "Other",
+    "Retroposon": "Other", "Retroposon?": "Other",
+    "Segmental": "Other", "Unknown": "Unknown", "Unknown.inc": "Unknown",
+    "Unspecified": "Other", "SINE": "SINE", "SINE?": "SINE",
+    "Satellite": "Satellite", "Simple_repeat": "Simple_repeat",
+    "rRNA": "Other", "scRNA": "Other", "snRNA": "Other",
+    "srpRNA": "Other", "tRNA": "tRNA", "ARTEFACT": "Other"
+}
+
+# Read repeats BED and map to broad classes
+df = pd.read_csv('repeats_majorclass.bed', sep='\t', header=None, names=['chrom','start','end','repeatclass'])
+df['repeatclass_fixed'] = df['repeatclass'].map(mapping)
+# If mapping failed, set as "Other"
+df['repeatclass_fixed'] = df['repeatclass_fixed'].fillna('Other')
+df[['chrom','start','end','repeatclass_fixed']].to_csv('repeats_majorclass_fixed.bed', sep='\t', header=False, index=False)
+EOF
+
+# Run the python mapping script (assumes pandas is installed)
+python3 broad_repeat_category_mapping.py
+
+# Remove prefix "HemMar#1#" from chromosome names (if present)
+sed -i 's/HemMar#1#//g' repeats_majorclass_fixed.bed
+
+# ------------------------
+# 6. Compute coverage (fraction of window covered by each repeat type) in 10kb windows
+# ------------------------
+
+# For each unique (broad) repeat type, create a file and compute window-wise coverage
+for type in $(cut -f4 repeats_majorclass_fixed.bed | sort | uniq); do
+  awk -v t="$type" '$4==t' repeats_majorclass_fixed.bed > "repeats_${type}.bed"
+  ${bedtools_path} coverage -a genome.10kb.windows.bed -b repeats_${type}.bed \
+    | awk -v type="$type" 'BEGIN{OFS="\t"}{print $1,$2,$3,type,$7}' \
+    > "density_${type}_10kb.bed"
+done
+
+# ------------------------
+# 7. Repeat analysis for 200kb windows
+# ------------------------
+
+# Create 200kb windows
+${bedtools_path} makewindows -g genome.sizes -w 200000 > genome.200kb.windows.bed
+
+# For each repeat class, compute coverage in 200kb windows
+for type in $(cut -f4 repeats_majorclass_fixed.bed | sort | uniq); do
+  awk -v t="$type" '$4==t' repeats_majorclass_fixed.bed > "repeats_${type}.bed"
+  ${bedtools_path} coverage -a genome.200kb.windows.bed -b repeats_${type}.bed \
+    | awk -v type="$type" 'BEGIN{OFS="\t"}{print $1,$2,$3,type,$7}' \
+    > "density_${type}_200kb.bed"
+done
+
+# ------------------------
+# 8. Compute coverage for all repeats combined ("total repeats")
+# ------------------------
+
+# Combine all repeats to one .bed file
+cat repeats_majorclass_fixed.bed > repeats_ALL.bed
+
+# Compute fraction of each 10kb window covered by any repeat
+${bedtools_path} coverage -a genome.10kb.windows.bed -b repeats_ALL.bed \
+    | awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"total_repeats",$7}' > density_total_repeat_10kb.bed
+
+# Compute fraction of each 200kb window covered by any repeat
+${bedtools_path} coverage -a genome.200kb.windows.bed -b repeats_ALL.bed \
+    | awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"total_repeats",$7}' > density_total_repeat_200kb.bed
+
+# outputs are the  fraction (percent or proportion) of bases in that window covered by a particular repeat class 
+
+```
