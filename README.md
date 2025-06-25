@@ -1,9 +1,9 @@
 # Hemitriccus-Pangenome
 Code for hemitriccus pangenome project 
 
-## 1. Genomic feature - SV associations
+## Genomic feature - SV associations
 
-**Get gene density in different genomic windows**
+**1. Get gene density **
 
 ```bash
 ############################################################################
