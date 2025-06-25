@@ -353,4 +353,32 @@ ${bedtools_path} coverage -a genome.200kb.windows.bed -b repeats_ALL.bed \
 
 # outputs are the  fraction (percent or proportion) of bases in that window covered by a particular repeat class 
 
+## trying instead to get the count of each repeat class in the different windwos
+
+# for 10kb windows
+for type in $(cut -f4 repeats_majorclass_fixed.bed | sort | uniq); do
+  awk -v t="$type" '$4==t' repeats_majorclass_fixed.bed > "repeats_${type}.bed"
+  ${bedtools_path} intersect -c -a genome.10kb.windows.bed -b repeats_${type}.bed \
+    | awk -v type="$type" 'BEGIN{OFS="\t"}{print $1,$2,$3,type,$NF}' \
+    > "count_${type}_10kb.bed"
+done
+
+# for 200 kb windows
+
+for type in $(cut -f4 repeats_majorclass_fixed.bed | sort | uniq); do
+  awk -v t="$type" '$4==t' repeats_majorclass_fixed.bed > "repeats_${type}.bed"
+  ${bedtools_path} intersect -c -a genome.200kb.windows.bed -b repeats_${type}.bed \
+    | awk -v type="$type" 'BEGIN{OFS="\t"}{print $1,$2,$3,type,$NF}' \
+    > "count_${type}_200kb.bed"
+done
+
+# for all repeats combined
+
+${bedtools_path} intersect -c -a genome.10kb.windows.bed -b repeats_ALL.bed \
+    | awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"total_repeats",$NF}' > count_total_repeat_10kb.bed
+
+${bedtools_path} intersect -c -a genome.200kb.windows.bed -b repeats_ALL.bed \
+    | awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"total_repeats",$NF}' > count_total_repeat_200kb.bed
+
+
 ```
