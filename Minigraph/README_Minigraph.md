@@ -7,7 +7,6 @@ Graph building with Minigraph.
 - [Github page](https://github.com/lh3/minigraph)
 
 ## Installation
-Steps to install and set up the project. Include code snippets for installation commands.
 
 ```bash
 # Install with conda
@@ -16,7 +15,7 @@ source activate python_env1
 conda install bioconda::minigraph
 ```
 
-This is simple to run. We want to input the haplotypes in a random order.
+We want to input the haplotypes in a random order
 ```bash
 # Working directory
 /n/holyscratch01/edwards_lab/Users/kelsielopez/svim/correct_ref
