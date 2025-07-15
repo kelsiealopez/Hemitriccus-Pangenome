@@ -1,2 +1,5 @@
-## Scaffolding of reference genome with PacBio HiFi sequnecing and Hi-C chromatin conformation capture sequencing
+## Scaffolding of reference genome with PacBio HiFi and Hi-C sequencing
 
+
+
+## Synteny analysis with other chromosome-level suboscine genome
