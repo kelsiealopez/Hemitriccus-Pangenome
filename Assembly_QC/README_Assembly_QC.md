@@ -1,3 +1,7 @@
+## Use Snakemake workflow for assembly with HifiAsm
+
+```bash
+
 #!/bin/bash
 
 #SBATCH -N 1
@@ -27,3 +31,4 @@
 #SBATCH -e errors_hifiasm_6371_%j.err
 #check that snakemake is working by running snakemake --help
 snakemake --snakefile Snakefile --cores 20 --use-conda --rerun-incomplete
+```
