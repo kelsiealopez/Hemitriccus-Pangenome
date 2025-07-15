@@ -1,6 +1,3 @@
-# Hemitriccus-Pangenome
-Code for hemitriccus pangenome project 
-
 ## Genomic Feature - SV analysis 
 
 **Get density of genes:**
