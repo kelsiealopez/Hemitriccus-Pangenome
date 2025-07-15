@@ -1,16 +1,11 @@
 ## Use Snakemake workflow for assembly with HifiAsm
 
-# Takes raw PacBio BAM files, converts them from BAM to FASTQ, assembles using HifiAsm, converts haplotype assemblies from HifiAsm from GFA to FA, and runs QUAST on all output haplotype assemblies
+### Takes raw PacBio BAM files, converts them from BAM to FASTQ, assembles using HifiAsm, converts haplotype assemblies from HifiAsm from GFA to FA, and runs QUAST on all output haplotype assemblies
 
 Resources:
 - [Snakemake Github page](https://github.com/harvardinformatics/pacbio_hifi_assembly)
 - [HifiAsm Github page](https://github.com/chhylp123/hifiasm)
 - [QUAST Github page](https://github.com/ablab/quast)
-
-
-Resources:
-- [pggb Github page](https://github.com/harvardinformatics/pacbio_hifi_assembly)
-- [pggb nextflow](https://nf-co.re/pangenome/1.0.0/)
 
 
 ```bash
