@@ -60,4 +60,44 @@ minigraph -cxggs -t20 ${analysis_path}/${sample8}.gfa ${haps_path}/${sample9}.fa
 minigraph -cxggs -t20 ${analysis_path}/${sample9}.gfa ${haps_path}/${sample10}.fa > ${analysis_path}/${sample10}.gfa
 minigraph -cxggs -t20 ${analysis_path}/${sample10}.gfa ${haps_path}/${sample11}.fa > ${analysis_path}/${sample11}.gfa
 minigraph -cxggs -t20 ${analysis_path}/${sample11}.gfa ${haps_path}/${sample12}.fa > ${analysis_path}/final_with_outgroup.gfa
+
+# Call variants from bubbles and put them in a bed file format
+minigraph -cxasm --call -t8 ${analysis_path}/final_with_outgroup.gfa ${haps_path}/${sample1}.fa > ${sample1}.bed
+minigraph -cxasm --call -t8 ${analysis_path}/final_with_outgroup.gfa ${haps_path}/${sample2}.fa > ${sample2}.bed
+minigraph -cxasm --call -t8 ${analysis_path}/final_with_outgroup.gfa ${haps_path}/${sample3}.fa > ${sample3}.bed
+minigraph -cxasm --call -t8 ${analysis_path}/final_with_outgroup.gfa ${haps_path}/${sample4}.fa > ${sample4}.bed
+minigraph -cxasm --call -t8 ${analysis_path}/final_with_outgroup.gfa ${haps_path}/${sample5}.fa > ${sample5}.bed
+minigraph -cxasm --call -t8 ${analysis_path}/final_with_outgroup.gfa ${haps_path}/${sample6}.fa > ${sample6}.bed
+minigraph -cxasm --call -t8 ${analysis_path}/final_with_outgroup.gfa ${haps_path}/${sample7}.fa > ${sample7}.bed
+minigraph -cxasm --call -t8 ${analysis_path}/final_with_outgroup.gfa ${haps_path}/${sample8}.fa > ${sample8}.bed
+minigraph -cxasm --call -t8 ${analysis_path}/final_with_outgroup.gfa ${haps_path}/${sample9}.fa > ${sample9}.bed
+minigraph -cxasm --call -t8 ${analysis_path}/final_with_outgroup.gfa ${haps_path}/${sample10}.fa > ${sample10}.bed
+minigraph -cxasm --call -t8 ${analysis_path}/final_with_outgroup.gfa ${haps_path}/${sample11}.fa > ${sample11}.bed
+minigraph -cxasm --call -t8 ${analysis_path}/final_with_outgroup.gfa ${haps_path}/${sample12}.fa > ${sample12}.bed
+
+# Merge all bed files 
+paste \
+HMRG_6371.hap1.p_ctg.bed \
+HMRG_6371.hap2.p_ctg.bed \
+HMRG_6386.hap1.p_ctg.bed \
+HMRG_6386.hap2.p_ctg.bed \
+HMRG_6388.hap1.p_ctg.bed \
+HMRG_6388.hap2.p_ctg.bed \
+HMRG_6431.hap1.p_ctg.bed \
+HMRG_6431.hap2.p_ctg.bed \
+HMRG_6433.hap1.p_ctg.bed \
+HMRG_6433.hap2.p_ctg.bed \
+VEFL_149044.hap1.p_ctg.bed \
+VEFL_149044.hap2.p_ctg.bed \
+| k8 /n/home03/kelsielopez/minigraph/misc/mgutils.js merge - > Minigraph_12haps.bed
+
+# Convert merged BED to VCF
+
+/n/netscratch/edwards_lab/Lab/kelsielopez/pangene/pangene-1.1-bin/bin_x64-linux/k8 \
+/n/home03/kelsielopez/minigraph/misc/mgutils-es6.js \
+merge2vcf \
+-s sample_names.txt \
+Minigraph_12haps.bed > Minigraph_12haps.vcf
+
+
 ```
