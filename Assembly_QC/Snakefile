@@ -1,0 +1,110 @@
+import yaml
+import glob, os, pathlib
+
+
+#Config file
+configfile: "../config/config.yaml"
+
+
+#Gets info from config file:
+samples = config["sample"]
+haplotypes=["p_ctg", "hap1.p_ctg", "hap2.p_ctg"]
+hifi_outdir = config["hifi_outdir"]
+assem_outdir = config["assem_outdir"]
+
+
+rule all:
+    input:
+        expand("results/assembly_qc/{sample}.{haplo}.quast/report.txt", haplo=haplotypes, sample=samples)
+
+#WIP: need options for demultiplexing
+rule bam2fastx:
+    input:
+        files = config["reads"].split(" ")
+    output:
+        "{sample}_combined_reads.fastq.gz"
+    conda:
+        "envs/bam2fastx.yaml"
+    params:
+        prefix = "{sample}_combined_reads"
+    shell:
+        "bam2fastq -o {params.prefix} {input}"
+
+rule adapterfilt:
+    input:
+        "{sample}_combined_reads.fastq.gz"
+    output:
+        temp(hifi_outdir + "/{sample}.filt.fastq.gz")
+    conda:
+        "envs/adapter.yaml"
+    shell:
+        "cutadapt --discard-trimmed --overlap=35 -b ATCTCTCTCAACAACAACAACGGAGGAGGAGGAAAAGAGAGAGAT -b ATCTCTCTCTTTTCCTCCTCCTCCGTTGTTGTTGTTGAGAGAGAT -o {output} {input}"
+
+#WIP: how to handle if want diploid assembly, or primary only? Separate rules?? Flags??
+#Three options: hifi-only (partially phased or primary/alternate), HiC integrated, trio-binning (don't include, involves lots of steps)
+rule hifi:
+    input:
+        hifi_outdir + "/{sample}.filt.fastq.gz"
+    output:
+        pasm = hifi_outdir + "/{sample}.p_ctg.gfa",
+        hap1asm = hifi_outdir + "/{sample}.hap1.p_ctg.gfa",
+        hap2asm = hifi_outdir + "/{sample}.hap2.p_ctg.gfa"
+    conda:
+        "envs/hifiasm.yaml"
+    params:
+        hic = config["use_hiC"],
+        hic1 = config["hiC_read1"],
+        hic2 = config["hiC_read2"],
+        prionly = config["primary_only"],
+        outdir = hifi_outdir + "/{sample}"
+    threads: 16
+    log:
+        "logs/{sample}.hifiasm.out"
+    shell:
+        """
+        if [[ "{params.hic}" == "true" ]]; then
+            hifiasm -t {threads} --h1 {params.hic1} --h2 {params.hic2} -o {params.outdir} {input} 2> {log}
+            mv {params.outdir}.hic.p_ctg.gfa {output.pasm}
+            mv {params.outdir}.hic.hap1.p_ctg.gfa {output.hap1asm}
+            mv {params.outdir}.hic.hap2.p_ctg.gfa {output.hap2asm}
+        elif [[ "{params.hic}" == "false" ]]; then
+            hifiasm -t {threads} -o {params.outdir} {input} 2> {log}
+            mv {params.outdir}.bp.p_ctg.gfa {output.pasm}
+            mv {params.outdir}.bp.hap1.p_ctg.gfa {output.hap1asm}
+            mv {params.outdir}.bp.hap2.p_ctg.gfa {output.hap2asm}
+        elif [[ "params.prionly" == "true" ]]; then
+            hifiasm -t {threads} -o {params.outdir} --primary {input} 2> {log}
+            mv {params.outdir}.asm.p_ctg.gfa {output.pasm}
+        fi
+        """
+
+rule gfa_to_fasta:
+    input:
+        hifi_outdir + "/{sample}.{haplo}.gfa"
+    output:
+        temp(hifi_outdir + "/{sample}.{haplo}.fa")
+    shell:
+        "awk '/^S/{{print \">\"$2;print $3}}' {input} > {output}"
+
+rule rename_contig:
+    input:
+        hifi_outdir + "/{sample}.{haplo}.fa"
+    output:
+        assem_outdir + "/{sample}.{haplo}.fa"
+    shell:
+        "awk -v sample={wildcards.sample} -v haplo={wildcards.haplo} 'BEGIN{{FS=\">\"; OFS=\"#\"}} /^>/{{if (haplo ~ /hap/) print \">\"sample,haplo,$2; else print \">\"sample,\"pri\",$2}} !/^>/{{print;}}' {input} > {output}"
+
+rule quast:
+    input:
+        assem_outdir + "/{sample}.{haplo}.fa"
+    params:
+        prefix="results/assembly_qc/{sample}.{haplo}.quast"
+    output:
+        "results/assembly_qc/{sample}.{haplo}.quast/report.txt"
+    conda:
+        "envs/quast.yaml"
+    threads: 4
+    log:
+        "logs/{sample}.{haplo}/quast_log/"
+    shell:
+        "quast.py -t {threads} --eukaryote -o {params.prefix} {input} &> {log}"
