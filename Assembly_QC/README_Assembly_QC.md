@@ -27,3 +27,46 @@
 #check that snakemake is working by running snakemake --help
 snakemake --snakefile Snakefile --cores 20 --use-conda --rerun-incomplete
 ```
+
+
+#### 5. Run BUSCO on all assemblies
+
+```bash
+#!/bin/bash
+#SBATCH -p test,shared
+#SBATCH -c 1
+#SBATCH -t 0-12:00
+#SBATCH --mem=100000
+#SBATCH --mail-type=END
+#SBATCH -o hap_assemblies_busco_%A_%a.out
+#SBATCH -e hap_assemblies_busco_%A_%a.err
+
+# List of input files
+input_files=(
+"/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/HMRG_6371.hap1.p_ctg.fa"
+"/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/HMRG_6371.hap2.p_ctg.fa"
+"/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/HMRG_6386.hap1.p_ctg.fa"
+"/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/HMRG_6386.hap2.p_ctg.fa"
+"/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/HMRG_6388.hap1.p_ctg.fa"
+"/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/HMRG_6388.hap2.p_ctg.fa"
+"/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/HMRG_6431.hap1.p_ctg.fa"
+"/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/HMRG_6431.hap2.p_ctg.fa"
+"/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/HMRG_6433.hap1.p_ctg.fa"
+"/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/HMRG_6433.hap2.p_ctg.fa"
+"/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/VEFL_149044.hap1.p_ctg.fa"
+"/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/VEFL_149044.hap2.p_ctg.fa"
+)
+
+# Get file for current array task
+input_file="${input_files[$SLURM_ARRAY_TASK_ID]}"
+
+# Extract the base name without extension for output folder
+base_name=$(basename "$input_file" .p_ctg.fa)
+
+# Directory for the BUSCO executable
+BUSCO_DIR="/n/netscratch/edwards_lab/Lab/kelsielopez/busco-5.8.3/bin"
+
+# Run BUSCO using aves_odb10 database
+$BUSCO_DIR/busco -i "$input_file" -l aves_odb10 -o "${base_name}_busco_aves" -m genome -f
+
+```
