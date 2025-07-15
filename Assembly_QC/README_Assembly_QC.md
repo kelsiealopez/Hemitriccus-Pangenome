@@ -9,7 +9,7 @@ Resources:
 
 
 Resources:
-- [pggb Github page]([https://github.com/pangenome/pggb](https://github.com/harvardinformatics/pacbio_hifi_assembly))
+- [pggb Github page](https://github.com/pangenome/pggb](https://github.com/harvardinformatics/pacbio_hifi_assembly)
 - [pggb nextflow](https://nf-co.re/pangenome/1.0.0/)
 
 
