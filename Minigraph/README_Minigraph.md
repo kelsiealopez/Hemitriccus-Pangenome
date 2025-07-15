@@ -100,4 +100,21 @@ merge2vcf \
 Minigraph_12haps.bed > Minigraph_12haps.vcf
 
 
+# Reformat the VCF according to Heng Li advice on VCF file format
+
+python3 reformat_vcf.py
+
+
+# remove any instances of these because i just want the sample names 
+# .hap2.p_ctg
+# .hap1.p_ctg
+
+sed -E 's/\.hap[12]\.p_ctg//g' Minigraph_12haps_polarizing_edited.vcf > sed -E 's/\.hap[12]\.p_ctg//g' Minigraph_12haps_polarizing_edited.vcf > Minigraph_12haps_polarizing_edited_cleaned.vcf
+
+# Classify variants using the same rules as the PGGB variant classification
+python3 minigraph_variant_classifying.py > minigraph_sv_results_cleaned_HMRG_names.tsv
+
+# Calculate totals
+
+python3 variant_totals.py
 ```
