@@ -152,5 +152,3 @@ gfa="HemMar_10_haps_June_2025_fix.gfa"
 gfa2matrix -c ${gfa} > HemMar_10_haps_June_2025_new_faa_fix_PAV.Rtab
 
 # make it readable in excel
-cp HemMar_10_haps_June_2025_new_faa_fix_PAV.Rtab HemMar_10_haps_June_2025_new_faa_fix_PAV.Rtab.xls
-```
