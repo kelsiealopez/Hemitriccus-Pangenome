@@ -26,6 +26,8 @@
 #SBATCH -e errors_hifiasm_6371_%j.err
 #check that snakemake is working by running snakemake --help
 snakemake --snakefile Snakefile --cores 20 --use-conda --rerun-incomplete
+
+# Repeat for all assemblies. Haplotype 1, haplotype 2, and primary assemblies are output
 ```
 
 
