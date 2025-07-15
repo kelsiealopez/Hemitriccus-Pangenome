@@ -5,7 +5,7 @@
 Resources:
 - [Snakemake Github page]([https://github.com/pangenome/pggb](https://github.com/harvardinformatics/pacbio_hifi_assembly))
 - [HifiAsm Github page]([https://nf-co.re/pangenome/1.0.0/](https://github.com/chhylp123/hifiasm))
-- [QUAST Github page]([[https://nf-co.re/pangenome/1.0.0/](https://github.com/chhylp123/hifiasm](https://github.com/ablab/quast))
+- [QUAST Github page]([https://github.com/chhylp123/hifiasm](https://github.com/ablab/quast))
 
 
 
