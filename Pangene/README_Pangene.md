@@ -1,10 +1,78 @@
 
-
+### 1. Prepare protein fasta file 
 ```bash
-# Prepare fasta file
+# Prepare fasta file to look like this 'GENE:transcript'
+
+>GPN1:rna-XM_032682815.1.54
+WRRQGEAGRAVLCVFWCWAWPAPGKPPSCRAWPPTCTGSAALRT.SI.TPPCTTCPSPPTSVSGTL.STK
+KS.NRSDMG.AQTVE..PLSISLLQGLTR..SSLKKDKMHLSMLLLTHRGKLRYSPGQHQEPS.LRPWLP
+LFLQLLSM.WTPLAVLTLSLLCPTCCMPAGSCTRQSYLSL.S.TKLT.LTTALQWNGCRTLRLFRMP.IK
+RPPMSVT.LVL.V.CWMNFTVH.RWLVFLRCLAQDWMSFLSSFLKL.MNMRGSIVQNTSA.EKHWRKLKI
+NKRESSWNTCGRTWAVCVCRAAHWQDLLMLLQWVPLS.Y.HEELSMKSKKRERVILMTLTMKGLRRVMKN
+QPSETLCRTCG.NAKGEATRMNE
+>GPN1:rna-XM_032682816.1.54
+WRRQGEAGRAVLCVFWCWAWPAPGKPPSCRAWPPTCTGSAALRT.SI.TPPCTTCPSPPTSVSGTL.STK
+KS.NRSDMG.AQTVE..PLSISLLQGLTR..SSLKKDKMHLSMLLLTHRGKLRYSPGQHQEPS.LRPWLP
+
+#so basically i want to join the gene name and the transcript name oft hese two files with ':'
+
+#I also have this annotation file which i based these files off of 
+
+740793 /n/netscratch/edwards_lab/Lab/kelsielopez/HemMar_annotation/toga/hemMar.toga.merged_protein_output.aa
+(python_env1) [kelsielopez@boslogin06 toga]$ head hemMar_with_CDS_corrected.gff3
+##gff-version 3
+scaffold_1	TOGA	gene	30610	43870	.	-	.	ID=nbis-gene-7993;Name=GPN1,chiLan.LOC116791331
+scaffold_1	TOGA	RNA	30610	43606	.	-	.	ID=rna-XM_032682815.1.54;Parent=nbis-gene-7993;Name=GPN1
+scaffold_1	TOGA	CDS	30610	30701	.	-	.	ID=rna-XM_032682815.1.54.cds1;Parent=rna-XM_032682815.1.54
+scaffold_1	TOGA	exon	30610	30701	.	-	.	ID=rna-XM_032682815.1.54.exon1;Parent=rna-XM_032682815.1.54
+scaffold_1	TOGA	CDS	31313	31423	.	-	.	ID=rna-XM_032682815.1.54.cds2;Parent=rna-XM_032682815.1.54
+scaffold_1	TOGA	exon	31313	31423	.	-	.	ID=rna-XM_032682815.1.54.exon2;Parent=rna-XM_032682815.1.54
+scaffold_1	TOGA	CDS	31903	31993	.	-	.	ID=rna-XM_032682815.1.54.cds3;Parent=rna-XM_032682815.1.54
+scaffold_1	TOGA	exon	31903	31993	.	-	.	ID=rna-XM_032682815.1.54.exon3;Parent=rna-XM_032682815.1.54
+scaffold_1	TOGA	CDS	32700	32739	.	-	.	ID=rna-XM_032682815.1.54.cds4;Parent=rna-XM_032682815.1.54
+
+
+
+# use this python code to just merge the two protein fasta
+
+python3 merge_protein_fastas.py
+
+
+# need to remove duplicate headers.... because it kept saying it failed to build the index
+
+(python_env1) [kelsielopez@boslogin06 labeled]$ grep '^>' /n/netscratch/edwards_lab/Lab/kelsielopez/HemMar_annotation/toga/combined_headers.faa | sort | uniq -c | awk '$1>1'
+      2 >CDKL2:XM_015276643.2.-1
+      2 >CDKL2:XM_015276644.2.-1
+      2 >CDKL2:XM_025150398.1.-1
+      2 >CDKL2:XM_025150400.1.-1
+      2 >chiLan.LOC116779876:rna-XM_032674383.1.-1
+      2 >chiLan.LOC116779928:rna-XM_032674440.1.-1
+      2 >chiLan.LOC116781295:rna-XM_032676997.1.-1
+      2 >galGal.LOC100859273:XM_025146279.1.-1
+      2 >galGal.LOC107050721:XM_025145990.1.-1
+      2 >galGal.LOC107050724:XM_025145752.1.-1
+      2 >PNKP:rna-XM_032677460.1.-1
+      2 >PNKP:rna-XM_032677461.1.-1
+      2 >PNKP:rna-XM_032677464.1.-1
+      2 >RCHY1:XM_015276333.2.-1
+      2 >RTN2:XM_025144514.1.-1
+      2 >THUMPD2:IDmodified-rna-33033
+      2 >THUMPD2:XM_004935288.3.-1
+      2 >THUMPD2:XM_025149411.1.-1
+
+
+awk '
+    /^>/ {
+        if (seen[$0]++) next
+    }
+    { print }
+' /n/netscratch/edwards_lab/Lab/kelsielopez/HemMar_annotation/toga/combined_headers.faa \
+ > /n/netscratch/edwards_lab/Lab/kelsielopez/HemMar_annotation/toga/combined_headers_deduped.faa
+ 
+ 
 ```
 
-### Run miniprot for protein alignment to all haplotype assemblies
+### 2. Run miniprot for protein alignment to all haplotype assemblies
 ```bash
 #!/bin/bash
 #SBATCH -p test
@@ -48,7 +116,7 @@ done
 
 ```
 
-### Run pangene for pangene gene graph building and call CNV and PAV
+### 3. Run pangene for pangene gene graph building and call CNV and PAV
 
 ```bash
 #!/bin/bash
