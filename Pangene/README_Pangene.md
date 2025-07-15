@@ -48,7 +48,7 @@ done
 
 ```
 
-### Run pangene for pangene gene graph building and call copy number variation and presence absence variation
+### Run pangene for pangene gene graph building and call CNV and PAV
 
 ```bash
 #!/bin/bash
