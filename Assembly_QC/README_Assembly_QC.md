@@ -1,5 +1,11 @@
 ## Use Snakemake workflow for assembly with HifiAsm
 
+https://github.com/harvardinformatics/pacbio_hifi_assembly
+
+https://github.com/chhylp123/hifiasm
+
+
+
 ```bash
 
 #!/bin/bash
