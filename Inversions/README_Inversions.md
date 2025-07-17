@@ -200,3 +200,6 @@ done
 
 # merge and find unique from all 4 programs
 ```
+
+
+## Use JBrowse to make dot plots for inversions. I loaded the whole genome assemblies and PAF files generated from minimap2 into JBrowse and interactively scrolled through all the dot plots. 
