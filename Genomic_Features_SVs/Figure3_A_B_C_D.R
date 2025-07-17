@@ -58,7 +58,7 @@ repeat_factor_levels <- c(
                 ########## reading and preparing data  ########## 
 
 # Main SV data
-pggb <- read_delim("pggb_variation_overlaps_final_with_max_allele_length.tab", delim = "\t")
+pggb <- read_delim("pggb_variation_overlaps_final_with_max_allele_length.tab", delim = "\t") # available on dryad
 
 # Separate out INS and DEL, assign negative sign to deletions
 get_SV_type_df <- function(df, types, sgn=1, label) {
