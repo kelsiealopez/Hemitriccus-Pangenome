@@ -516,3 +516,25 @@ ${bedtools_path} intersect -c -a genome.200kb.windows.bed -b SNPs.bed | \
 ############################################################################
 
 ```
+
+### Run repeat masker on largest allele for plotting in histogram 
+```bash 
+#!/bin/bash
+#SBATCH -p edwards
+#SBATCH -c 16
+#SBATCH -t 3-0:00
+#SBATCH -o SV_allele_repeats_%j.out
+#SBATCH -e SV_allele_repeats_%j.err 
+#SBATCH --mem=100000
+#SBATCH --mail-type=END
+
+
+library="/n/holyscratch01/edwards_lab/Users/kelsielopez/repeats/SV_alleles_pggb_redo/HemMar.repeats.family.no.scaff.fasta"
+fa_path="/n/holyscratch01/edwards_lab/Users/kelsielopez/pggb_redo/merging/SV_alleles_over_50_bp.fa"
+
+RepeatMasker -xsmall -pa 48 -gff -no_is -lib ${library} ${fa_path} -dir HemMar_complete_custom_lib
+
+# Need to make a new file without HemMar#1# prefix
+sed 's/HemMar#1#//g' SV_alleles_over_50_bp.fa.out > SV_alleles_over_50_bp.fa.noHemMar.out
+
+```
