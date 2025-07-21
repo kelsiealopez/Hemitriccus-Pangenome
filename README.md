@@ -3,12 +3,6 @@ Code for hemitriccus pangenome project
 
 
 ## All software used in analyses
-
-Resources:
-- [pggb Github page](https://github.com/pangenome/pggb)
-- [pggb nextflow](https://nf-co.re/pangenome/1.0.0/)
--- test
-
 - [Hifiasm](https://github.com/chhylp123/hifiasm) (v0.19.8)
 - [Quast](https://quast.sourceforge.net/docs/manual.html) (v5.2.0)
 - [BUSCO](https://busco.ezlab.org) (v5.2.2)
