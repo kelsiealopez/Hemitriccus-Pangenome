@@ -10,7 +10,7 @@ repeat_data <- data.frame(
                       "LINE", "Low_complexity", "Satellite", "Other", "SINE"),
                     levels = c("Nonrepetitive", "Simple_repeat", "DNA", "LTR", 
                                "Unknown", "LINE", "Low_complexity", "Satellite", "Other", "SINE")),
-  Percentage = c(100 - 13.86, 1.00, 0.52, 3.00, 1.07, 7.16, 0.26, 0.66, 0, 0.19)  # Adjusted values
+  Percentage = c(100 - 13.86, 1.00, 0.52, 3.00, 1.07, 7.16, 0.26, 0.66, 0, 0.19)  
 )
 
 
