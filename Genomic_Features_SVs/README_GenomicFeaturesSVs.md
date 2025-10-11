@@ -17,7 +17,7 @@ awk '$3=="gene" {OFS="\t"; print $1, $4-1, $5}' ${gff} > genes.bed
 # Getting Genome/Chromosome Sizes from FASTA
 # ----------------------------------------------------------------------------
 
-# (Optional) Index your FASTA file to prepare for downstream steps
+# (Optional) Index FASTA file to prepare for downstream steps
 samtools faidx your.fasta
 
 # Extract sequence names and lengths from the FASTA index; write to genome.sizes
@@ -44,7 +44,7 @@ sed -i 's/HemMar#1#//g' genome.sizes
 # Windowing and Gene Density Calculation
 # ----------------------------------------------------------------------------
 
-# Path to your bedtools binary
+# Path to bedtools binary
 bedtools_path="/n/home03/kelsielopez/bedtools2/bin/bedtools"
 
 # Create non-overlapping 10kb windows across each sequence/chromosome
@@ -387,7 +387,7 @@ ${bedtools_path} intersect -c -a genome.200kb.windows.bed -b repeats_ALL.bed \
 ############################# Variant Density ###############################
 ############################################################################
 
-# List all unique variant types (column 8) present in your input tab file
+# List all unique variant types (column 8) present in input tab file
 awk '{print $8}' pggb_variation_overlaps_final.tab | sort -u
 
 # ------------------------
@@ -451,7 +451,7 @@ ${bedtools_path} coverage -a genome.200kb.windows.bed -b SNPs.bed | \
 ############################# Variant Counts ################################
 ############################################################################
 
-# List all unique variant types (column 8) present in your input tab file
+# List all unique variant types (column 8) present in input tab file
 awk '{print $8}' pggb_variation_overlaps_final.tab | sort -u
 
 # ------------------------
