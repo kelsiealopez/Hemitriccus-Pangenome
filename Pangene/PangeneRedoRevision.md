@@ -18,17 +18,16 @@ chiLan.LOC116781923
 ```
 
 
-## 3. Run blast_CNV_6433_only_absent_test_partition_dec.sh for each individual. Probably easier to make this an array for all assemblies 
+## 3. Run blast_CNV_6433_only_absent.sh for each individual. Probably easier to make this an array for all assemblies 
 
 ```bash
-[kelsielopez@boslogin08 blast_validate_cnv]$ cat blast_CNV_6433_only_absent_test_partition_dec.sh
 #!/bin/bash
 #SBATCH -p test
 #SBATCH -c 32
 #SBATCH -N 1
 #SBATCH -t 0-12:00
-#SBATCH -o blast_CNV_6433_only_absent_test_partition_dec_%j.out
-#SBATCH -e blast_CNV_6433_only_absent_test_partition_dec_%j.err 
+#SBATCH -o blast_CNV_6433_only_absent_%j.out
+#SBATCH -e blast_CNV_6433_only_absent_%j.err 
 #SBATCH --mem=150G
 #SBATCH --mail-type=END
 
