@@ -1,10 +1,10 @@
 
-# Used this R script to get a tsv file of genes missing in individuals (cnv_artifact_filtered_genes_absent_by_individual.tsv)
+## Used this R script to get a tsv file of genes missing in individuals (cnv_artifact_filtered_genes_absent_by_individual.tsv)
 
-# Run pangeneFilteringtoGetPAVList.R
+## Run pangeneFilteringtoGetPAVList.R
 
 
-# make text files like this for each individual
+## make text files like this for each individual
 ```bash
 [kelsielopez@boslogin08 blast_validate_cnv]$ head 6433_absent_Dec.txt
 GOLPH3L
@@ -20,7 +20,7 @@ chiLan.LOC116781923
 ```
 
 
-# Run blast_CNV_6433_only_absent_test_partition_dec.sh for each individual. Probably easier to make this an array for all assemblies 
+## Run blast_CNV_6433_only_absent_test_partition_dec.sh for each individual. Probably easier to make this an array for all assemblies 
 
 ```bash
 [kelsielopez@boslogin08 blast_validate_cnv]$ cat blast_CNV_6433_only_absent_test_partition_dec.sh
@@ -81,7 +81,7 @@ done
 ```
 
 
-# testing e value e-10 and sequence identity 95% 
+## testing e value e-10 and sequence identity 95% 
 
 ```bash
 cd /n/netscratch/edwards_lab/Lab/kelsielopez/blast_validate_cnv
@@ -123,4 +123,4 @@ add_hits 6433_DB_vs_genes.blast.DEC HMRG_6433
 ```
 
 
-# then re run this R script (FinalPangene.R) to get final counts 
+## then re run this R script (FinalPangene.R) to get final counts 
