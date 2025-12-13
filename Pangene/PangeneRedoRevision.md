@@ -2,7 +2,7 @@
 ## 1. Used this R script (pangeneFilteringtoGetPAVList.R) to get a tsv file of genes missing in individuals (cnv_artifact_filtered_genes_absent_by_individual.tsv)
 
 
-## 2. make text files like this for each individual
+## 2. make text files like this for each individual of the genes that are supposedly missing 
 ```bash
 [kelsielopez@boslogin08 blast_validate_cnv]$ head 6433_absent_Dec.txt
 GOLPH3L
