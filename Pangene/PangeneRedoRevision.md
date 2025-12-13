@@ -120,4 +120,4 @@ add_hits 6433_DB_vs_genes.blast.DEC HMRG_6433
 ```
 
 
-## 5.  then re run this R script (FinalPangene.R) to get final counts 
+## 5.  then re run this R script (FinalPangeneProcessingAfterBlastingPAV.R) to get final CNV/PAV list 
