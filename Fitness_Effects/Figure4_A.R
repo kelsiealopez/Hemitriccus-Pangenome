@@ -11,7 +11,7 @@ data <- data.frame(
   Ratio = c(0.031, 0.019, 0.022, 0.099, 0.015, 0.19, 0.163, 0.186, 0.451, 0.258)
 )
 
-# Reorder the Type factor according to the desired order
+# Reorder the Type factor 
 data$Type <- factor(data$Type, levels = c("HM", "HF", "AW", "AC", "AI"))
 
 # Ensure the Comparison factor places SV/SNP first, then INDEL/SNP
