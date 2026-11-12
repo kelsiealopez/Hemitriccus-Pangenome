@@ -84,7 +84,7 @@ awk 'BEGIN{OFS="\t"}{print $1,$2,$3,$4/10000}' gene_density_10kb.raw.bed > gene_
 ############################################################################
 ############################################################################
 
-# Below are the full file paths for each ReLERNN output you want to merge
+# Below are the full file paths for each ReLERNN output  to merge
 /n/netscratch/edwards_lab/Lab/kelsielopez/ReLERNN/HemMar/example_output/pggb_cleaned_final_biallelic_snp.PREDICT.BSCORRECTED.txt
 /n/netscratch/edwards_lab/Lab/kelsielopez/ReLERNN/HemMar/scaff_1_2_no_missing/HemMar_scaffold_1_first_half/example_output/HemMar_scaffold_1_first_half_nomissing.PREDICT.BSCORRECTED.txt
 /n/netscratch/edwards_lab/Lab/kelsielopez/ReLERNN/HemMar/scaff_1_2_no_missing/HemMar_scaffold_1_second_half/example_output/HemMar_scaffold_1_second_half_nomissing.PREDICT.BSCORRECTED.txt
@@ -92,7 +92,7 @@ awk 'BEGIN{OFS="\t"}{print $1,$2,$3,$4/10000}' gene_density_10kb.raw.bed > gene_
 /n/netscratch/edwards_lab/Lab/kelsielopez/ReLERNN/HemMar/scaff_1_2_no_missing/HemMar_scaffold_2_second_half/example_output/HemMar_scaffold_2_second_half_nomissing.PREDICT.BSCORRECTED.txt
 
 # -----------------------------------------------
-# Count lines in each ReLERNN result file (sanity check, e.g. to confirm no data loss/duplication)
+# Count lines in each ReLERNN result file (sanity check, to confirm no data loss/duplication)
 wc -l /n/netscratch/edwards_lab/Lab/kelsielopez/ReLERNN/HemMar/example_output/pggb_cleaned_final_biallelic_snp.PREDICT.BSCORRECTED.txt
 wc -l /n/netscratch/edwards_lab/Lab/kelsielopez/ReLERNN/HemMar/scaff_1_2_no_missing/HemMar_scaffold_1_first_half/example_output/HemMar_scaffold_1_first_half_nomissing.PREDICT.BSCORRECTED.txt
 wc -l /n/netscratch/edwards_lab/Lab/kelsielopez/ReLERNN/HemMar/scaff_1_2_no_missing/HemMar_scaffold_1_second_half/example_output/HemMar_scaffold_1_second_half_nomissing.PREDICT.BSCORRECTED.txt
@@ -120,7 +120,7 @@ awk 'FNR>1 {gsub(/^b'\''|'\''$/, "", $1); print}' \
 # Make a backup or intermediate copy for further editing
 cp all_chroms_combined_no_missing.txt all_chroms_combined_no_missing_noHemMar.txt
 
-# Remove 'HemMar#1#' (prefix) from chromosome names in the combined file (in-place edit)
+# Remove 'HemMar#1#' (prefix) from chromosome names in the combined file
 sed -i 's/HemMar#1#//g' all_chroms_combined_no_missing_noHemMar.txt
 
 # -----------------------------------------------
@@ -183,7 +183,7 @@ result[['chrom','start','end','recombRate']].to_csv('recomb_rate_200kb_windows.b
 
 REF="/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/hemMar_complete_sorted_prefixed_pggb_subset_JBAT.FINAL.full.soft.mask.fasta"
 
-#if making a bed file of GC content...
+# making a bed file of GC content...
 
 cd /n/netscratch/edwards_lab/Lab/kelsielopez/feature_importance
 
@@ -198,7 +198,7 @@ import pandas as pd
 fasta_path = "/n/netscratch/edwards_lab/Lab/kelsielopez/hap_assemblies/prefixed/hemMar_complete_sorted_prefixed_pggb_subset_JBAT.FINAL.full.soft.mask.fasta"
 bed_out = "gc_content.10kb.bed"
 
-window_size = 10000  # <-- Change this as needed!
+window_size = 10000  
 
 out = []
 for record in SeqIO.parse(fasta_path, "fasta"):
@@ -246,7 +246,7 @@ sed -i 's/HemMar#1#//g' gc_content.10kb.no.hemMar.bed
 # 2. Explore Repeat BED File
 # ------------------------
 
-# Count the unique repeat classes in your reformatted repeat BED file
+# Count the unique repeat classes in reformatted repeat BED file
 awk '{print $4}' repeat_overlaps_reformatted_final.bed | sort -u | wc -l
 
 # ------------------------
@@ -257,7 +257,7 @@ awk '{print $4}' repeat_overlaps_reformatted_final.bed | sort -u | wc -l
 ${bedtools_path} makewindows -g genome.sizes -w 10000 > genome.10kb.windows.bed
 
 # ------------------------
-# 4. Extract broad repeat class for each feature (use last element if comma-separated)
+# 4. Extract broad repeat class for each feature
 # ------------------------
 
 awk -F'\t' '{
@@ -300,10 +300,10 @@ df['repeatclass_fixed'] = df['repeatclass_fixed'].fillna('Other')
 df[['chrom','start','end','repeatclass_fixed']].to_csv('repeats_majorclass_fixed.bed', sep='\t', header=False, index=False)
 EOF
 
-# Run the python mapping script (assumes pandas is installed)
+# Run the python mapping script
 python3 broad_repeat_category_mapping.py
 
-# Remove prefix "HemMar#1#" from chromosome names (if present)
+# Remove prefix "HemMar#1#" from chromosome names
 sed -i 's/HemMar#1#//g' repeats_majorclass_fixed.bed
 
 # ------------------------
@@ -348,7 +348,7 @@ ${bedtools_path} coverage -a genome.10kb.windows.bed -b repeats_ALL.bed \
 ${bedtools_path} coverage -a genome.200kb.windows.bed -b repeats_ALL.bed \
     | awk 'BEGIN{OFS="\t"}{print $1,$2,$3,"total_repeats",$7}' > density_total_repeat_200kb.bed
 
-# outputs are the  fraction (percent or proportion) of bases in that window covered by a particular repeat class 
+# outputs are the fraction (percent) of bases in that window covered by a particular repeat class 
 
 ## trying instead to get the count of each repeat class in the different windwos
 
@@ -411,7 +411,7 @@ awk 'BEGIN{FS=OFS="\t"}
 sed -i 's/HemMar#1#//g' INDELs.bed
 
 # ------------------------
-# Extract SNPs (single nucleotide polymorphisms) to a BED
+# Extract SNPs to a BED
 awk 'BEGIN{FS=OFS="\t"}
   NR>1 && ($8=="SNP" || $8=="SNP_Complex"){print $1,$2,$3}' ${variation_file} > SNPs.bed
 
